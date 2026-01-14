@@ -265,7 +265,8 @@ def figure_5_hamiltonian_recovery(num_seeds=20):
     all_errors = []
     
     for pattern in defect_patterns:
-        for seed in range(num_seeds // len(defect_patterns)):
+        seeds_per_pattern = max(1, num_seeds // len(defect_patterns))
+        for seed in range(seeds_per_pattern):
             np.random.seed(42 + seed)
             h = 6.0 * np.cos(2 * np.pi * 1.618 * np.arange(L))
             t_points = np.linspace(0, 10, 100)
