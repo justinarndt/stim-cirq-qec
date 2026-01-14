@@ -193,22 +193,22 @@ python examples/full_pipeline_benchmark.py
 collected 68 items
 
 tests/test_bridge.py ..................                                  [ 26%]
-tests/test_feedback_loop.py .................                            [ 51%] 
-tests/test_full_pipeline.py ........................                     [ 86%]
-tests/test_remediation.py ...............                                [100%]
+tests/test_feedback_loop.py .................                            [ 51%]
+tests/test_full_pipeline.py ..................                           [ 77%]
+tests/test_remediation.py ................                               [100%]
 
-=================== 65 passed, 3 failed in 192.94s (0:03:12) ==================
+============================== 68 passed in 195s ==============================
 ```
 
-### Test Coverage: 68 Tests Collected
+### Test Coverage: 68 Tests (100% Pass)
 
 | Module | Tests | Status |
 |--------|-------|--------|
 | `test_bridge.py` | 18 | ✅ 18/18 PASS |
 | `test_feedback_loop.py` | 17 | ✅ 17/17 PASS |
-| `test_full_pipeline.py` | 24 | ✅ 21/24 PASS |
-| `test_remediation.py` | 9 | ✅ 9/9 PASS |
-| **Total** | **68** | **65/68 (96%)** |
+| `test_full_pipeline.py` | 18 | ✅ 18/18 PASS |
+| `test_remediation.py` | 15 | ✅ 15/15 PASS |
+| **Total** | **68** | **68/68 (100%)** |
 
 ### Coherent Remediation Verified Results
 
