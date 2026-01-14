@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stim-cirq-qec"
+version = "1.0.0"
+description = "Hybrid Stim + Cirq adaptive QEC with real-time syndrome feedback, drift suppression, and coherent error remediation"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Justin Arndt", email = "justinarndtai@gmail.com"}
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = ["quantum", "QEC", "surface-code", "stim", "cirq", "adaptive", "feedback"]
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "matplotlib>=3.7.0",
+    "stim>=1.12.0",
+    "stimcirq>=1.12.0",
+    "cirq-core>=1.3.0",
+    "pymatching>=2.0.0",
+]
+
+[project.optional-dependencies]
+gpu = ["jax[cuda12]>=0.4.20"]
+dev = ["pytest>=7.0.0", "pytest-benchmark>=4.0.0"]
+google = ["cirq-google>=1.3.0"]
+
+[project.urls]
+Homepage = "https://github.com/justinarndt/stim-cirq-qec"
+Repository = "https://github.com/justinarndt/stim-cirq-qec.git"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["adaptive_qec*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"

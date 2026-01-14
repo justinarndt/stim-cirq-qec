@@ -1,0 +1,14 @@
+# Core
+numpy>=1.24.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Quantum Simulation
+stim>=1.12.0
+stimcirq>=1.12.0
+cirq-core>=1.3.0
+pymatching>=2.0.0
+
+# Testing
+pytest>=7.0.0
