@@ -202,29 +202,40 @@ def figure_3_exponential_suppression(num_seeds=10, num_cycles=300):
             results[name]['mean'].append(np.mean(errors))
             results[name]['std'].append(np.std(errors))
     
-    # Plot
-    fig, ax = plt.subplots(figsize=(10, 7))
+    # Plot - HERO FIGURE STYLE
+    plt.style.use('seaborn-v0_8-paper')
+    fig, ax = plt.subplots(figsize=(10, 8))
     
     colors = {'No Drift (Static)': '#1f77b4', 
               'Drift + Static': '#d62728', 
               'Drift + Adaptive': '#2ca02c'}
     markers = {'No Drift (Static)': 's', 'Drift + Static': 'o', 'Drift + Adaptive': '^'}
+    linestyles = {'No Drift (Static)': '--', 'Drift + Static': ':', 'Drift + Adaptive': '-'}
     
     for name, data in results.items():
         means = np.array(data['mean'])
         stds = np.array(data['std'])
-        ax.semilogy(distances, means, marker=markers[name], markersize=10,
-                   label=name, color=colors[name], linewidth=2)
+        ax.semilogy(distances, means, marker=markers[name], markersize=12,
+                   label=name, color=colors[name], linewidth=3, linestyle=linestyles[name])
         ax.fill_between(distances, means - 1.96*stds, means + 1.96*stds,
                        alpha=0.2, color=colors[name])
     
-    ax.set_xlabel('Code Distance d', fontsize=12)
-    ax.set_ylabel('Logical Error Rate (log scale)', fontsize=12)
-    ax.set_title('Exponential Suppression: λ > 2 Maintained Under Drift', 
-                fontsize=14, fontweight='bold')
-    ax.legend(loc='upper right', fontsize=11)
+    ax.set_xlabel('Code Distance d', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Logical Error Rate (log scale)', fontsize=14, fontweight='bold')
+    ax.set_title('Exponential Suppression: Adaptive Protection Preserved Under Drift', 
+                fontsize=16, fontweight='bold', pad=15)
+    
+    # Legend
+    legend = ax.legend(loc='lower left', fontsize=12, frameon=True, framealpha=0.9)
+    legend.get_frame().set_facecolor('white')
+    legend.get_frame().set_edgecolor('gray')
+
+    # Grid
+    ax.grid(True, which="major", ls="-", alpha=0.4)
+    ax.grid(True, which="minor", ls=":", alpha=0.2)
+    
     ax.set_xticks(distances)
-    ax.grid(True, alpha=0.3)
+    ax.tick_params(axis='both', which='major', labelsize=12)
     
     # Calculate and annotate λ factors
     adaptive_means = np.array(results['Drift + Adaptive']['mean'])
@@ -232,9 +243,13 @@ def figure_3_exponential_suppression(num_seeds=10, num_cycles=300):
         if adaptive_means[i+1] > 0 and adaptive_means[i] > 0:
             lambda_factor = np.log(adaptive_means[i] / adaptive_means[i+1]) / np.log(2)
             mid_d = (distances[i] + distances[i+1]) / 2
-            mid_err = np.sqrt(adaptive_means[i] * adaptive_means[i+1])
-            ax.annotate(f'λ={lambda_factor:.2f}', (mid_d, mid_err),
-                       fontsize=9, ha='center', color='#2ca02c')
+            mid_val = np.sqrt(adaptive_means[i] * adaptive_means[i+1])
+            
+            # Annotate with box
+            ax.annotate(f'λ={lambda_factor:.2f}', (mid_d, mid_val),
+                       xytext=(0, 15), textcoords='offset points',
+                       fontsize=11, ha='center', color='#2ca02c', fontweight='bold',
+                       bbox=dict(boxstyle='round,pad=0.2', fc='white', ec='#2ca02c', alpha=0.9))
     
     filepath = FIGURES_DIR / 'exponential_suppression.png'
     plt.savefig(filepath, dpi=300)
