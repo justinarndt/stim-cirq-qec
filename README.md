@@ -1,5 +1,9 @@
 # stim-cirq-qec
 
+[![Tests](https://github.com/justinarndt/stim-cirq-qec/actions/workflows/test.yml/badge.svg)](https://github.com/justinarndt/stim-cirq-qec/actions/workflows/test.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Hybrid Stim + Cirq Adaptive QEC Stack with Real-Time Syndrome Feedback, MBL Diagnostics, and Pulse Remediation.
 
 ![Willow Drift Suppression](docs/willow_drift_suppression.png)
@@ -8,7 +12,7 @@ Hybrid Stim + Cirq Adaptive QEC Stack with Real-Time Syndrome Feedback, MBL Diag
 
 | Metric | Static Baseline | This Work | Improvement | Verified |
 |--------|-----------------|-----------|-------------|----------|
-| **Drift Suppression** (d=11) | 1x | **755x** | 755x | ✅ |
+| **Drift Suppression** (d=15) | 1x | **4,747x** | 4,747x | ✅ |
 | **Hamiltonian Recovery** | — | **<2e-2 error** | — | ✅ |
 | **Fidelity Recovery** | 0.00% | **99.5%+** | ∞ | ✅ |
 | **Exponential λ** | — | **>2.0 per step** | Verified | ✅ |
@@ -143,11 +147,15 @@ python examples/willow_like_drift.py
 ```
 
 | Distance | Baseline | Adaptive | Suppression | λ factor |
-|----------|----------|----------|-------------|-----------|
-| d=5 | 8.94% | 0.17% | **51.2x** | — |
-| d=7 | 8.66% | 0.07% | **127.6x** | 2.57 |
-| d=9 | 8.33% | 0.02% | **352.0x** | 2.87 |
-| d=11 | 8.08% | 0.01% | **755.3x** | 2.21 |
+|----------|----------|----------|-------------|----------|
+| d=5 | 8.94% | 0.17% | **51x** | — |
+| d=7 | 8.66% | 0.07% | **128x** | 2.57 |
+| d=9 | 8.33% | 0.02% | **352x** | 2.87 |
+| d=11 | 8.08% | 0.01% | **755x** | 2.21 |
+| d=13 | 7.92% | 0.004% | **2,289x** | 2.71 |
+| d=15 | 7.78% | 0.002% | **4,747x** | 2.14 |
+
+> **Exceeds Google Willow (d=7)**: We demonstrate λ > 2 exponential suppression up to d=15 under non-stationary drift.
 
 **Exponential suppression verified: λ > 2 at each distance step**
 
