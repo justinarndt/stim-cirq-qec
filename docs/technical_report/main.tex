@@ -203,6 +203,33 @@ Remediated Fidelity: 99.5%+
 ======================================================================
 \end{verbatim}
 
+\subsection{Hamiltonian Recovery Validation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/hamiltonian_recovery.png}
+    \caption{Left: Recovered coupling strengths vs true values across multiple defect patterns (20 seeds). Right: Error distribution histogram showing max error $<$ 2e-2.}
+    \label{fig:hamiltonian}
+\end{figure}
+
+\subsection{Ablation Study}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../figures/ablation_chart.png}
+    \caption{Component contribution analysis at d=7. Each bar shows logical error rate with 95\% CI. Numbers indicate suppression factor relative to static MWPM baseline.}
+    \label{fig:ablation}
+\end{figure}
+
+\subsection{Performance Scaling}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/performance_scaling.png}
+    \caption{Computational time scaling vs code distance. Power law fit shows $O(d^{2.5})$ scaling, demonstrating efficient hybrid implementation.}
+    \label{fig:scaling}
+\end{figure}
+
 %==============================================================================
 \section{Discussion}
 %==============================================================================
