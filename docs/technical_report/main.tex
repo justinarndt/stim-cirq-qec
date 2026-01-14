@@ -227,7 +227,34 @@ Remediated Fidelity: 99.5%+
     \centering
     \includegraphics[width=0.8\textwidth]{../figures/performance_scaling.png}
     \caption{Computational time scaling vs code distance. Power law fit shows $O(d^{2.5})$ scaling, demonstrating efficient hybrid implementation.}
-    \label{fig:scaling}
+\label{fig:scaling}
+\end{figure}
+
+\subsection{Fidelity Recovery Contour}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../figures/fidelity_contour.png}
+    \caption{Fidelity recovery as a function of weak link strength and crosstalk coupling. Optimal region (green) achieves 100\% fidelity; extreme defects (red) show degraded recovery. Contour lines mark 50\%, 80\%, 95\%, and 99\% fidelity thresholds.}
+    \label{fig:fidelity}
+\end{figure}
+
+\subsection{Feedback Controller Dynamics}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/feedback_dynamics.png}
+    \caption{Controller response to step drift at cycle 50. Top: True error rate with drift event. Bottom: Static MWPM (red) diverges while adaptive feedback (green) settles to baseline within 50 cycles.}
+    \label{fig:feedback}
+\end{figure}
+
+\subsection{Latency Breakdown}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../figures/latency_breakdown.png}
+    \caption{Execution time distribution for 50 QEC cycles at d=7. Stim sampling dominates (45\%), with feedback update contributing only 5\% (\textless 1ms latency).}
+    \label{fig:latency}
 \end{figure}
 
 %==============================================================================
