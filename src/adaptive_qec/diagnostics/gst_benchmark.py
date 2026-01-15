@@ -20,6 +20,7 @@ try:
     PYGSTI_AVAILABLE = True
 except ImportError:
     PYGSTI_AVAILABLE = False
+    DataSet = None  # Allow type hints to work without pyGSTi
 
 
 @dataclass
