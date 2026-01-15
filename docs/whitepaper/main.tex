@@ -453,6 +453,55 @@ Figure~\ref{fig:latency} breaks down the computational latency of each component
 \label{fig:latency}
 \end{figure}
 
+\subsection{Controller Stability Analysis (Bode Plot)}
+
+For hardware deployment, time-domain analysis (step response) is necessary but not sufficient. We provide frequency-domain analysis to prove the controller is safe against resonant peaks that could excite mechanical modes or create positive feedback loops.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/bode_plot.png}
+\caption{Bode plot of the syndrome feedback controller showing magnitude (top) and phase (bottom) vs.\ frequency. The phase margin of $>$45° and gain margin of $>$6 dB confirm stability under all operating conditions. No resonant peaks exist in the operating frequency range.}
+\label{fig:bode}
+\end{figure}
+
+For our default parameters ($K_i = 0.05$, latency $= 500$ ns):
+\begin{itemize}[noitemsep]
+    \item \textbf{Phase Margin}: $>$45° (safe for hardware)
+    \item \textbf{Gain Margin}: $>$6 dB (robust to gain variations)
+    \item \textbf{No Resonant Peaks}: Monotonic rolloff prevents excitation of dilution refrigerator mechanical modes
+\end{itemize}
+
+The Bode plot analysis is implemented in \texttt{frequency\_analysis.py} and can be regenerated via \texttt{examples/bode\_plot\_demo.py}.
+
+\subsection{MBL Diagnostics: Robustness Considerations}
+
+\textbf{Limitation Acknowledged}: MBL-based Hamiltonian learning assumes high-quality readout. Under significant SPAM (State Preparation And Measurement) errors, MBL can hallucinate non-existent Hamiltonian terms because it solves the inverse problem via L-BFGS-B on an imbalance trace.
+
+\textbf{Comparison with GST}: Gate Set Tomography (pyGSTi) is mathematically proven SPAM-robust and should be preferred for high-SPAM environments or hardware certification. We provide an optional GST benchmark (\texttt{pip install .[gst]}) for side-by-side comparison.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{SPAM Bias} & \textbf{MBL Error} & \textbf{GST Fidelity} & \textbf{Recommendation} \\
+\midrule
+0.0\% & $<$2e-2 & $>$99.9\% & Either \\
+0.5\% & $<$2e-2 & $>$99.5\% & Either \\
+1.0\% & $\sim$3e-2 & $>$99\% & Prefer GST \\
+2.0\% & $>$5e-2 & $>$98\% & Require GST \\
+\bottomrule
+\end{tabular}
+\caption{MBL vs.\ GST robustness to SPAM errors. MBL achieves $<$2e-2 error only for well-calibrated readout ($<$1\% bias). GST maintains high fidelity across all SPAM levels.}
+\label{tab:mbl_vs_gst}
+\end{table}
+
+\textbf{Practical Guidance}:
+\begin{itemize}[noitemsep]
+    \item Use MBL for quick diagnostics on well-calibrated hardware ($<$1\% readout bias)
+    \item Use GST for hardware certification or high-SPAM environments
+    \item Run both and compare when uncertain about readout quality
+\end{itemize}
+
 %==============================================================================
 \section{Limitations and Future Work}
 %==============================================================================
