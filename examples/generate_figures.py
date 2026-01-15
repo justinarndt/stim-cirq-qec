@@ -92,8 +92,8 @@ def figure_2_drift_suppression(num_seeds=20, num_cycles=500):
     """
     print("\n[Figure 2] Generating Drift Suppression Curves...")
     
-    distances = [5, 7, 9, 11]
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    distances = [5, 7, 9, 11, 13, 15]
+    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
     axes = axes.flatten()
     
     summary_data = {}
@@ -133,26 +133,31 @@ def figure_2_drift_suppression(num_seeds=20, num_cycles=500):
         
         ax = axes[idx]
         
-        # Bar comparison
+        # HERO STYLING: Bar comparison
         x = ['Static\nMWPM', 'Adaptive\nFeedback']
         heights = [baseline_mean, adaptive_mean]
         errors = [baseline_std * 1.96, adaptive_std * 1.96]
         colors = ['#d62728', '#2ca02c']
         
-        bars = ax.bar(x, heights, yerr=errors, capsize=5, color=colors, alpha=0.8)
-        ax.set_ylabel('Logical Error Rate')
-        ax.set_title(f'd={d}: {suppression:.0f}× Suppression')
+        bars = ax.bar(x, heights, yerr=errors, capsize=6, color=colors, alpha=0.85, 
+                      edgecolor='black', linewidth=1.5)
+        ax.set_ylabel('Logical Error Rate', fontsize=12, fontweight='bold')
+        ax.set_title(f'd={d}: {suppression:.0f}× Suppression', fontsize=13, fontweight='bold')
         ax.set_yscale('log')
         ax.set_ylim([1e-5, 0.2])
+        ax.tick_params(axis='both', which='major', labelsize=11)
+        ax.grid(True, which='major', alpha=0.4, linestyle='-')
+        ax.grid(True, which='minor', alpha=0.2, linestyle=':')
         
-        # Add suppression label
-        ax.text(0.5, 0.95, f'{suppression:.0f}×', transform=ax.transAxes,
-                fontsize=16, fontweight='bold', ha='center', va='top',
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+        # Add suppression label with better styling
+        ax.text(0.5, 0.92, f'{suppression:.0f}×', transform=ax.transAxes,
+                fontsize=18, fontweight='bold', ha='center', va='top',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='#2ca02c', edgecolor='black', alpha=0.9),
+                color='white')
     
     plt.suptitle('Drift Suppression: Static vs Adaptive (20 seeds, 95% CI)', 
-                 fontsize=14, fontweight='bold')
-    plt.tight_layout()
+                 fontsize=16, fontweight='bold')
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
     
     filepath = FIGURES_DIR / 'drift_suppression_curves.png'
     plt.savefig(filepath, dpi=300)
@@ -169,7 +174,7 @@ def figure_3_exponential_suppression(num_seeds=10, num_cycles=300):
     """
     print("\n[Figure 3] Generating Exponential Suppression Plot...")
     
-    distances = [3, 5, 7, 9, 11]
+    distances = [5, 7, 9, 11, 13, 15]
     
     # Three scenarios
     scenarios = {
@@ -294,28 +299,32 @@ def figure_5_hamiltonian_recovery(num_seeds=20):
             error = np.abs(J_recovered - pattern)
             all_errors.extend(error)
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    # HERO STYLING
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
     
     # Scatter: recovered vs true
-    ax1.scatter(all_true, all_recovered, alpha=0.6, s=30)
-    ax1.plot([0.4, 1.4], [0.4, 1.4], 'r--', linewidth=2, label='y = x')
-    ax1.set_xlabel('True Coupling J', fontsize=12)
-    ax1.set_ylabel('Recovered Coupling J', fontsize=12)
-    ax1.set_title('Hamiltonian Recovery Accuracy', fontsize=13)
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
+    ax1.scatter(all_true, all_recovered, alpha=0.7, s=50, edgecolor='black', linewidth=0.5)
+    ax1.plot([0.4, 1.4], [0.4, 1.4], 'r--', linewidth=3, label='y = x (perfect)')
+    ax1.set_xlabel('True Coupling J', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Recovered Coupling J', fontsize=14, fontweight='bold')
+    ax1.set_title('Hamiltonian Recovery Accuracy', fontsize=15, fontweight='bold')
+    ax1.legend(fontsize=12, frameon=True, fancybox=True)
+    ax1.grid(True, which='major', alpha=0.4, linestyle='-')
+    ax1.grid(True, which='minor', alpha=0.2, linestyle=':')
+    ax1.tick_params(axis='both', which='major', labelsize=12)
     
     # Histogram of errors
-    ax2.hist(all_errors, bins=30, edgecolor='black', alpha=0.7, color='#2ca02c')
-    ax2.axvline(np.max(all_errors), color='red', linestyle='--', 
+    ax2.hist(all_errors, bins=30, edgecolor='black', alpha=0.85, color='#2ca02c', linewidth=1.5)
+    ax2.axvline(np.max(all_errors), color='red', linestyle='--', linewidth=2,
                label=f'Max: {np.max(all_errors):.3f}')
-    ax2.axvline(np.mean(all_errors), color='blue', linestyle='--',
+    ax2.axvline(np.mean(all_errors), color='blue', linestyle='--', linewidth=2,
                label=f'Mean: {np.mean(all_errors):.3f}')
-    ax2.set_xlabel('Recovery Error |J_recovered - J_true|', fontsize=12)
-    ax2.set_ylabel('Count', fontsize=12)
-    ax2.set_title('Error Distribution (< 2e-2 target)', fontsize=13)
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
+    ax2.set_xlabel('Recovery Error |J_recovered - J_true|', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Count', fontsize=14, fontweight='bold')
+    ax2.set_title('Error Distribution (<2e-2 target)', fontsize=15, fontweight='bold')
+    ax2.legend(fontsize=12, frameon=True, fancybox=True)
+    ax2.grid(True, which='major', alpha=0.4, linestyle='-')
+    ax2.tick_params(axis='both', which='major', labelsize=12)
     
     plt.tight_layout()
     filepath = FIGURES_DIR / 'hamiltonian_recovery.png'
@@ -361,7 +370,8 @@ def figure_6_ablation(num_seeds=10, num_cycles=200):
                 errors.append(result['baseline_error_rate'])
         results.append((name, np.mean(errors), np.std(errors)))
     
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # HERO STYLING
+    fig, ax = plt.subplots(figsize=(12, 7))
     
     names = [r[0] for r in results]
     means = [r[1] for r in results]
@@ -369,23 +379,26 @@ def figure_6_ablation(num_seeds=10, num_cycles=200):
     
     colors = ['#d62728', '#ff7f0e', '#9467bd', '#2ca02c', '#1f77b4']
     bars = ax.bar(range(len(names)), means, yerr=[s*1.96 for s in stds], 
-                  capsize=5, color=colors, alpha=0.8)
+                  capsize=6, color=colors, alpha=0.85, edgecolor='black', linewidth=1.5)
     
     ax.set_xticks(range(len(names)))
-    ax.set_xticklabels(names, rotation=15, ha='right')
-    ax.set_ylabel('Logical Error Rate')
-    ax.set_title('Ablation Study: Component Contribution (d=7)', fontsize=13)
+    ax.set_xticklabels(names, rotation=15, ha='right', fontsize=12)
+    ax.set_ylabel('Logical Error Rate', fontsize=14, fontweight='bold')
+    ax.set_title('Ablation Study: Component Contribution (d=7)', fontsize=16, fontweight='bold')
     ax.set_yscale('log')
-    ax.grid(True, alpha=0.3, axis='y')
+    ax.grid(True, which='major', alpha=0.4, axis='y', linestyle='-')
+    ax.grid(True, which='minor', alpha=0.2, axis='y', linestyle=':')
+    ax.tick_params(axis='both', which='major', labelsize=11)
     
-    # Add suppression annotations
+    # Add suppression annotations with hero style
     baseline = means[0]
     for i, (bar, mean) in enumerate(zip(bars, means)):
         if mean > 0:
             suppression = baseline / mean
             ax.annotate(f'{suppression:.1f}×', 
-                       (bar.get_x() + bar.get_width()/2, mean),
-                       ha='center', va='bottom', fontsize=10, fontweight='bold')
+                       (bar.get_x() + bar.get_width()/2, mean * 1.5),
+                       ha='center', va='bottom', fontsize=12, fontweight='bold',
+                       bbox=dict(boxstyle='round,pad=0.2', fc='white', ec='gray', alpha=0.9))
     
     plt.tight_layout()
     filepath = FIGURES_DIR / 'ablation_chart.png'
@@ -420,23 +433,27 @@ def figure_7_performance_scaling():
         elapsed = time.time() - start
         times.append(elapsed)
     
-    fig, ax = plt.subplots(figsize=(8, 6))
+    # HERO STYLING
+    fig, ax = plt.subplots(figsize=(10, 7))
     
-    ax.loglog(distances, times, 'o-', markersize=10, linewidth=2, color='#1f77b4')
+    ax.loglog(distances, times, 'o-', markersize=12, linewidth=3, color='#1f77b4',
+              markeredgecolor='black', markeredgewidth=1.5)
     
     # Fit power law
     log_d = np.log(distances)
     log_t = np.log(times)
     slope, intercept = np.polyfit(log_d, log_t, 1)
     fit_t = np.exp(intercept) * np.array(distances) ** slope
-    ax.loglog(distances, fit_t, '--', color='red', alpha=0.7, 
+    ax.loglog(distances, fit_t, '--', color='red', alpha=0.8, linewidth=2.5,
              label=f'Fit: O(d^{slope:.2f})')
     
-    ax.set_xlabel('Code Distance d', fontsize=12)
-    ax.set_ylabel('Time per Experiment (s)', fontsize=12)
-    ax.set_title('Computational Scaling (100 cycles, 256 shots)', fontsize=13)
-    ax.legend()
-    ax.grid(True, alpha=0.3)
+    ax.set_xlabel('Code Distance d', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Time per Experiment (s)', fontsize=14, fontweight='bold')
+    ax.set_title('Computational Scaling (100 cycles, 256 shots)', fontsize=16, fontweight='bold')
+    ax.legend(fontsize=12, frameon=True, fancybox=True)
+    ax.grid(True, which='major', alpha=0.4, linestyle='-')
+    ax.grid(True, which='minor', alpha=0.2, linestyle=':')
+    ax.tick_params(axis='both', which='major', labelsize=12)
     
     filepath = FIGURES_DIR / 'performance_scaling.png'
     plt.savefig(filepath, dpi=300)

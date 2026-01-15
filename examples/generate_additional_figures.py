@@ -72,27 +72,32 @@ def figure_4_fidelity_contour():
             fidelity_grid[i, j] = fidelity
             print(f"  weak={weak:.2f}, crosstalk={crosstalk:.2f} → fidelity={fidelity:.3f}")
     
-    fig, ax = plt.subplots(figsize=(10, 8))
+    # HERO STYLING
+    fig, ax = plt.subplots(figsize=(11, 9))
     
     im = ax.imshow(fidelity_grid, origin='lower', aspect='auto',
                    extent=[weak_strengths[0], weak_strengths[-1], 
                           crosstalks[0], crosstalks[-1]],
                    cmap='RdYlGn', vmin=0, vmax=1)
     
-    cbar = plt.colorbar(im, ax=ax, label='Remediated Fidelity')
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label('Remediated Fidelity', fontsize=14, fontweight='bold')
+    cbar.ax.tick_params(labelsize=12)
     
     # Add contour lines
     cs = ax.contour(weak_strengths, crosstalks, fidelity_grid, 
-                    levels=[0.5, 0.8, 0.95, 0.99], colors='black', linewidths=1)
-    ax.clabel(cs, inline=True, fontsize=9, fmt='%.2f')
+                    levels=[0.5, 0.8, 0.95, 0.99], colors='black', linewidths=2)
+    ax.clabel(cs, inline=True, fontsize=11, fmt='%.2f')
     
-    ax.set_xlabel('Weak Link Strength', fontsize=12)
-    ax.set_ylabel('Crosstalk Coupling', fontsize=12)
-    ax.set_title('Fidelity Recovery vs Defect Parameters', fontsize=14)
+    ax.set_xlabel('Weak Link Strength', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Crosstalk Coupling', fontsize=14, fontweight='bold')
+    ax.set_title('Fidelity Recovery vs Defect Parameters', fontsize=16, fontweight='bold')
+    ax.tick_params(axis='both', which='major', labelsize=12)
     
-    # Mark optimal region
-    ax.text(0.9, 1.1, 'Optimal\nRegion', fontsize=10, ha='center', 
-            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    # Mark optimal region with hero style
+    ax.text(0.9, 1.1, 'Optimal\nRegion', fontsize=12, ha='center', fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='#2ca02c', edgecolor='black', alpha=0.9),
+            color='white')
     
     filepath = FIGURES_DIR / 'fidelity_contour.png'
     plt.savefig(filepath, dpi=300)
@@ -140,31 +145,35 @@ def figure_8_feedback_dynamics():
         # Apply correction (reduces effective error)
         syndrome_adaptive[t] = max(0, measured - correction * 0.5)
     
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+    # HERO STYLING
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 9), sharex=True)
     
     # Top: Drift signal
-    ax1.plot(range(cycles), drift_signal + baseline, 'k--', label='True Error Rate', linewidth=2)
-    ax1.axhline(baseline, color='gray', linestyle=':', alpha=0.5)
-    ax1.axvline(50, color='red', linestyle='--', alpha=0.5, label='Drift Event')
-    ax1.set_ylabel('Error Rate')
-    ax1.set_title('Feedback Controller Response to Step Drift', fontsize=14)
-    ax1.legend(loc='upper left')
-    ax1.grid(True, alpha=0.3)
+    ax1.plot(range(cycles), drift_signal + baseline, 'k--', label='True Error Rate', linewidth=3)
+    ax1.axhline(baseline, color='gray', linestyle=':', alpha=0.5, linewidth=2)
+    ax1.axvline(50, color='red', linestyle='--', alpha=0.7, linewidth=2, label='Drift Event')
+    ax1.set_ylabel('Error Rate', fontsize=14, fontweight='bold')
+    ax1.set_title('Feedback Controller Response to Step Drift', fontsize=16, fontweight='bold')
+    ax1.legend(loc='upper left', fontsize=12, frameon=True, fancybox=True)
+    ax1.grid(True, which='major', alpha=0.4, linestyle='-')
+    ax1.tick_params(axis='both', which='major', labelsize=12)
     
     # Bottom: Controller response
-    ax2.plot(range(cycles), syndrome_static, 'r-', alpha=0.7, label='Static MWPM', linewidth=1)
-    ax2.plot(range(cycles), syndrome_adaptive, 'g-', label='Adaptive Feedback', linewidth=2)
-    ax2.axhline(baseline, color='gray', linestyle=':', alpha=0.5, label='Baseline')
-    ax2.axvline(50, color='red', linestyle='--', alpha=0.5)
+    ax2.plot(range(cycles), syndrome_static, 'r-', alpha=0.7, label='Static MWPM', linewidth=2)
+    ax2.plot(range(cycles), syndrome_adaptive, 'g-', label='Adaptive Feedback', linewidth=3)
+    ax2.axhline(baseline, color='gray', linestyle=':', alpha=0.5, linewidth=2, label='Baseline')
+    ax2.axvline(50, color='red', linestyle='--', alpha=0.7, linewidth=2)
     
-    # Annotate settling time
-    ax2.annotate('Settling\n<50 cycles', xy=(100, 0.042), fontsize=10,
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+    # Annotate settling time with hero style
+    ax2.annotate('Settling\n<50 cycles', xy=(100, 0.042), fontsize=12, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='#2ca02c', edgecolor='black', alpha=0.9),
+                color='white')
     
-    ax2.set_xlabel('QEC Cycle')
-    ax2.set_ylabel('Syndrome Density')
-    ax2.legend(loc='upper right')
-    ax2.grid(True, alpha=0.3)
+    ax2.set_xlabel('QEC Cycle', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Syndrome Density', fontsize=14, fontweight='bold')
+    ax2.legend(loc='upper right', fontsize=12, frameon=True, fancybox=True)
+    ax2.grid(True, which='major', alpha=0.4, linestyle='-')
+    ax2.tick_params(axis='both', which='major', labelsize=12)
     
     plt.tight_layout()
     filepath = FIGURES_DIR / 'feedback_dynamics.png'
@@ -194,7 +203,8 @@ def figure_9_latency_breakdown():
         'Other': 5
     }
     
-    fig, ax = plt.subplots(figsize=(10, 8))
+    # HERO STYLING
+    fig, ax = plt.subplots(figsize=(11, 9))
     
     colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6']
     
@@ -205,15 +215,21 @@ def figure_9_latency_breakdown():
         colors=colors,
         explode=[0.05, 0, 0, 0, 0, 0],
         startangle=90,
-        textprops={'fontsize': 11}
+        textprops={'fontsize': 13, 'fontweight': 'bold'},
+        wedgeprops={'edgecolor': 'black', 'linewidth': 1.5}
     )
     
-    ax.set_title('Execution Time Breakdown (d=7, 50 cycles)', fontsize=14)
+    # Make percentage text bold
+    for autotext in autotexts:
+        autotext.set_fontsize(12)
+        autotext.set_fontweight('bold')
     
-    # Add total time annotation
-    ax.text(0, -1.3, 'Total: ~4s per 50 cycles\nFeedback latency: <1ms', 
-            ha='center', fontsize=11,
-            bbox=dict(boxstyle='round', facecolor='white', edgecolor='gray'))
+    ax.set_title('Execution Time Breakdown (d=7, 50 cycles)', fontsize=16, fontweight='bold')
+    
+    # Add total time annotation with hero style
+    ax.text(0, -1.35, 'Total: ~4s per 50 cycles\nFeedback latency: <1ms', 
+            ha='center', fontsize=13, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.4', facecolor='white', edgecolor='#2ca02c', linewidth=2))
     
     filepath = FIGURES_DIR / 'latency_breakdown.png'
     plt.savefig(filepath, dpi=300)

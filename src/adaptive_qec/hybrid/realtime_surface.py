@@ -47,6 +47,11 @@ class ExperimentConfig:
     # Feedback
     feedback_Ki: float = 0.05
     feedback_latency: int = 10
+    
+    # Physical latency and decoherence (Reality Gap fix)
+    latency_ns: float = 0.0       # Feedback loop latency in nanoseconds
+    t1_us: float = 100.0          # T1 relaxation time in microseconds
+    t2_us: float = 80.0           # T2 dephasing time in microseconds
 
 
 class AdaptiveSurfaceCode:
@@ -81,13 +86,16 @@ class AdaptiveSurfaceCode:
             zz_crosstalk=self.config.zz_crosstalk
         )
         
-        # Initialize sampler
+        # Initialize sampler with latency parameters
         self.sampler = HybridAdaptiveSampler(
             distance=self.config.distance,
             rounds=self.config.rounds,
             noise=self.noise,
             feedback_Ki=self.config.feedback_Ki,
-            feedback_latency=self.config.feedback_latency
+            feedback_latency=self.config.feedback_latency,
+            latency_ns=self.config.latency_ns,
+            t1_us=self.config.t1_us,
+            t2_us=self.config.t2_us
         )
         
         # Drift state

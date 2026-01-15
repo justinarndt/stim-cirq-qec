@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from adaptive_qec.hybrid.stim_cirq_bridge import StimCirqBridge, NoiseModel
 from adaptive_qec.feedback.controller import SyndromeFeedbackController
 from adaptive_qec.diagnostics.hamiltonian_learner import HamiltonianLearner
+from adaptive_qec.physics.leakage import LeakageTracker
 
 
 @dataclass
@@ -28,6 +29,9 @@ class SamplingResult:
     logical_errors: int
     syndrome_density: float
     correction: float
+    decay_penalty: float = 0.0  # T1/T2 decay during latency
+    leakage_contribution: float = 0.0  # Error from leaked qubits
+    num_leaked_qubits: int = 0  # Current leaked qubit count
     coherent_state: Optional[np.ndarray] = None
 
 
@@ -61,7 +65,10 @@ class HybridAdaptiveSampler:
         noise: Optional[NoiseModel] = None,
         feedback_Ki: float = 0.05,
         feedback_latency: int = 10,
-        drift_threshold: float = 0.02
+        drift_threshold: float = 0.02,
+        latency_ns: float = 0.0,
+        t1_us: float = 100.0,
+        t2_us: float = 80.0
     ):
         """
         Parameters
@@ -78,23 +85,44 @@ class HybridAdaptiveSampler:
             Feedback loop delay in rounds.
         drift_threshold : float
             Syndrome density deviation threshold for drift detection.
+        latency_ns : float
+            Physical feedback latency in nanoseconds. During this time,
+            qubits idle and experience T1/T2 decay.
+        t1_us : float
+            T1 relaxation time in microseconds.
+        t2_us : float
+            T2 dephasing time in microseconds.
         """
         self.distance = distance
         self.rounds = rounds
         self.noise = noise or NoiseModel()
         self.drift_threshold = drift_threshold
+        self.latency_ns = latency_ns
+        self.t1_us = t1_us
+        self.t2_us = t2_us
         
         # Core components
         self.bridge = StimCirqBridge(distance=distance, rounds=rounds)
         self.controller = SyndromeFeedbackController(
             Ki=feedback_Ki,
-            feedback_latency=feedback_latency
+            feedback_latency=feedback_latency,
+            latency_ns=latency_ns,
+            t1_us=t1_us,
+            t2_us=t2_us
         )
         
         # Build circuits
         self.stim_circuit = self.bridge.cirq_to_stim(None, self.noise)
         self.dem = self.bridge.stim_to_dem(self.stim_circuit)
         self.decoder = pymatching.Matching.from_stim_circuit(self.stim_circuit)
+        
+        # Leakage tracking (Reality Gap fix)
+        num_data_qubits = distance ** 2
+        self.leakage_tracker = LeakageTracker(
+            num_qubits=num_data_qubits,
+            leakage_rate=self.noise.leakage_rate,
+            seepage_rate=self.noise.seepage_rate
+        )
         
         # State
         self.baseline_density: Optional[float] = None
@@ -103,7 +131,9 @@ class HybridAdaptiveSampler:
             "density": [],
             "correction": [],
             "logical_errors": [],
-            "drift_detected": []
+            "drift_detected": [],
+            "leaked_qubits": [],
+            "leakage_contribution": []
         }
     
     def calibrate(self, calibration_shots: int = 10240) -> float:
@@ -204,11 +234,36 @@ class HybridAdaptiveSampler:
         
         logical_errors = np.sum(predictions != observable_flips)
         
+        # Apply T1/T2 decay penalty during feedback latency (Reality Gap fix)
+        # This models qubit decoherence while the FPGA processes syndrome data
+        decay_penalty = self.controller.compute_latency_decay_penalty()
+        if decay_penalty > 0:
+            # Each qubit has independent probability of decay-induced error
+            # For d qubits, expected additional errors per shot
+            num_data_qubits = self.distance ** 2
+            expected_decay_errors = decay_penalty * num_data_qubits * batch_size
+            # Add as Poisson-sampled additional errors
+            decay_induced_errors = np.random.poisson(expected_decay_errors)
+            logical_errors += decay_induced_errors
+        
+        # Apply leakage modeling (Reality Gap fix)
+        # Track qubit leakage to |2⟩ state and seepage recovery
+        self.leakage_tracker.run_cycle(num_gates_per_qubit=5)
+        leakage_contribution = self.leakage_tracker.get_leakage_error_contribution()
+        num_leaked = self.leakage_tracker.get_num_leaked()
+        
+        # Add leakage-induced errors
+        if leakage_contribution > 0:
+            leakage_errors = np.random.poisson(leakage_contribution * batch_size)
+            logical_errors += leakage_errors
+        
         # Record history
         self.history["density"].append(density)
         self.history["correction"].append(correction)
         self.history["logical_errors"].append(logical_errors)
         self.history["drift_detected"].append(drift_detected)
+        self.history["leaked_qubits"].append(num_leaked)
+        self.history["leakage_contribution"].append(leakage_contribution)
         
         return SamplingResult(
             detection_events=detection_events,
@@ -217,6 +272,9 @@ class HybridAdaptiveSampler:
             logical_errors=logical_errors,
             syndrome_density=density,
             correction=correction,
+            decay_penalty=decay_penalty,
+            leakage_contribution=leakage_contribution,
+            num_leaked_qubits=num_leaked,
             coherent_state=coherent_state
         )
     

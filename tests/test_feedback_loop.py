@@ -196,3 +196,72 @@ class TestFeedbackGains:
         # Higher gain should produce larger state
         # (just verify it produces some response)
         assert ctrl.integrator_state > 0
+
+
+class TestLatencyDecay:
+    """Tests for T1/T2 decay during feedback latency (Reality Gap fix)."""
+    
+    def test_zero_latency_no_penalty(self):
+        """Zero latency should give zero decay penalty."""
+        ctrl = SyndromeFeedbackController(latency_ns=0.0)
+        
+        penalty = ctrl.compute_latency_decay_penalty()
+        
+        assert penalty == 0.0
+    
+    def test_nonzero_latency_has_penalty(self):
+        """Non-zero latency should produce decay penalty."""
+        ctrl = SyndromeFeedbackController(
+            latency_ns=500.0,  # 500ns feedback latency
+            t1_us=100.0,
+            t2_us=80.0
+        )
+        
+        penalty = ctrl.compute_latency_decay_penalty()
+        
+        # Should be small but positive
+        assert penalty > 0
+        assert penalty < 0.01  # ~0.004 expected for 500ns
+    
+    def test_decay_penalty_scales_with_latency(self):
+        """Higher latency should give higher decay penalty."""
+        penalties = []
+        for latency_ns in [100, 500, 1000, 5000]:
+            ctrl = SyndromeFeedbackController(
+                latency_ns=latency_ns,
+                t1_us=100.0,
+                t2_us=80.0
+            )
+            penalties.append(ctrl.compute_latency_decay_penalty())
+        
+        # Should be monotonically increasing
+        for i in range(len(penalties) - 1):
+            assert penalties[i+1] > penalties[i]
+    
+    def test_decay_penalty_scales_with_t1(self):
+        """Shorter T1 should give higher decay penalty."""
+        ctrl_long_t1 = SyndromeFeedbackController(
+            latency_ns=500.0, t1_us=100.0, t2_us=100.0
+        )
+        ctrl_short_t1 = SyndromeFeedbackController(
+            latency_ns=500.0, t1_us=20.0, t2_us=100.0
+        )
+        
+        penalty_long = ctrl_long_t1.compute_latency_decay_penalty()
+        penalty_short = ctrl_short_t1.compute_latency_decay_penalty()
+        
+        assert penalty_short > penalty_long
+    
+    def test_history_records_decay_penalty(self):
+        """Controller history should record decay penalty."""
+        ctrl = SyndromeFeedbackController(
+            latency_ns=500.0,
+            t1_us=100.0,
+            t2_us=80.0
+        )
+        ctrl.setpoint = 0.05
+        
+        ctrl.update(0.06)
+        
+        assert "decay_penalty" in ctrl.history
+

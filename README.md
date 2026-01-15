@@ -155,9 +155,9 @@ python examples/willow_like_drift.py
 | d=13 | 7.92% | 0.004% | **2,289x** | 2.71 |
 | d=15 | 7.78% | 0.002% | **4,747x** | 2.14 |
 
-> **Exceeds Google Willow (d=7)**: We demonstrate λ > 2 exponential suppression up to d=15 under non-stationary drift.
+> **Extends Google Willow's below-threshold demonstration**: We simulate λ ≈ 2 exponential suppression up to d=15 under non-stationary drift (simulation predictions for d≥9, not hardware-validated).
 
-**Exponential suppression verified: λ > 2 at each distance step**
+*Note: Suppression = median(baseline/adaptive) over 20 seeds; λ values from least-squares fit (R²=0.98)*
 
 ---
 

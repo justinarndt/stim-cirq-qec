@@ -16,12 +16,41 @@ from dataclasses import dataclass
 
 @dataclass
 class NoiseModel:
-    """Unified noise model for Stim and Cirq."""
+    """Unified noise model for Stim and Cirq.
+    
+    Attributes
+    ----------
+    depolarizing : float
+        Pauli noise rate per gate.
+    measurement : float
+        Readout error probability.
+    reset : float
+        Reset error probability.
+    coherent_overrotation : float
+        Coherent Z-rotation angle (Cirq only).
+    zz_crosstalk : float
+        ZZ coupling strength (Cirq only).
+    t1_us : float
+        T1 relaxation time in microseconds.
+    t2_us : float
+        T2 dephasing time in microseconds.
+    cycle_time_us : float
+        QEC cycle time in microseconds.
+    leakage_rate : float
+        Per-gate probability of |1⟩ → |2⟩ transition.
+    seepage_rate : float
+        Per-gate probability of |2⟩ → |1⟩ return (LRU).
+    """
     depolarizing: float = 0.001  # Pauli noise rate
     measurement: float = 0.01   # Readout error
     reset: float = 0.005        # Reset error
     coherent_overrotation: float = 0.0  # Coherent Z-rotation (Cirq only)
     zz_crosstalk: float = 0.0   # ZZ coupling (Cirq only)
+    t1_us: float = 100.0        # T1 in microseconds (typical transmon)
+    t2_us: float = 80.0         # T2 in microseconds
+    cycle_time_us: float = 1.0  # QEC cycle time in microseconds
+    leakage_rate: float = 0.001  # |1⟩ → |2⟩ per gate
+    seepage_rate: float = 0.01   # |2⟩ → |1⟩ (LRU recovery)
 
 
 class StimCirqBridge:
