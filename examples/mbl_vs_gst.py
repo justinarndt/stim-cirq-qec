@@ -120,7 +120,7 @@ def main():
     # Setup
     L = 4  # Chain length
     true_couplings = np.ones(L - 1)  # Uniform couplings
-    learner = HamiltonianLearner(chain_length=L)
+    learner = HamiltonianLearner(system_size=L)
     
     # SPAM levels to test
     spam_levels = [0.0, 0.005, 0.01, 0.02, 0.05]
