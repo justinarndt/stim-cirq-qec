@@ -32,9 +32,9 @@ class ExperimentConfig:
     num_cycles: int = 1000
     batch_size: int = 1024
     
-    # Noise
-    depolarizing: float = 0.001
-    measurement: float = 0.01
+    # Noise (Willow Specs)
+    depolarizing: float = 1e-3    # ~0.1% avg gate error
+    measurement: float = 1.5e-2   # ~1.5% readout error
     reset: float = 0.005
     coherent_overrotation: float = 0.0
     zz_crosstalk: float = 0.0
@@ -48,10 +48,12 @@ class ExperimentConfig:
     feedback_Ki: float = 0.05
     feedback_latency: int = 10
     
-    # Physical latency and decoherence (Reality Gap fix)
-    latency_ns: float = 0.0       # Feedback loop latency in nanoseconds
-    t1_us: float = 100.0          # T1 relaxation time in microseconds
-    t2_us: float = 80.0           # T2 dephasing time in microseconds
+    # Physical latency and decoherence (Willow Ground Truth)
+    latency_ns: float = 600.0     # Conservative decoder+FPGA latency
+    t1_us: float = 68.0           # Willow Average T1
+    t2_us: float = 75.0           # Conservative estimate
+    gate_time_ns: float = 25.0    # Typical transmon gate time
+    readout_time_ns: float = 500.0
 
 
 class AdaptiveSurfaceCode:

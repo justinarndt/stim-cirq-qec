@@ -33,7 +33,7 @@ def main():
     
     # Configuration
     Ki = 0.05  # Our default integral gain
-    latency_ns = 500  # 500 ns FPGA latency
+    latency_ns = 600  # 600 ns FPGA latency (Willow spec)
     
     print(f"\nController Parameters:")
     print(f"  Integral Gain (Ki): {Ki}")

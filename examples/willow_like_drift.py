@@ -62,8 +62,8 @@ def run_willow_like_experiment(
                 rounds=5,
                 num_cycles=num_cycles,
                 batch_size=batch_size,
-                depolarizing=0.001,
-                measurement=0.01,
+                depolarizing=1e-3,
+                measurement=1.5e-2,
                 enable_drift=True,
                 drift_rate=0.005,
                 drift_target=0.02  # 20% drift

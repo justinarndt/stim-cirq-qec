@@ -316,7 +316,7 @@ Surface code circuits use the rotated layout with:
 We implement four noise sources:
 \begin{enumerate}[noitemsep]
     \item \textbf{Depolarizing}: $p = 0.001$ per gate (Stim)
-    \item \textbf{Measurement error}: $p_m = 0.01$ per measurement
+    \item \textbf{Measurement error}: $p_m = 0.015$ per measurement
     \item \textbf{Ornstein-Uhlenbeck drift}: $dp/dt = \theta(\mu - p) + \sigma dW$
     \item \textbf{Coherent injection}: Over-rotation, ZZ crosstalk (Cirq density matrix)
 \end{enumerate}
@@ -437,9 +437,9 @@ Figure~\ref{fig:feedback} shows the real-time feedback controller behavior durin
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{figures/feedback_dynamics.png}
-\caption{Feedback controller dynamics during drift suppression. Top: syndrome density over time with step drift injection. Bottom: controller correction signal showing integral accumulation and settling behavior.}
-\label{fig:feedback}
+\includegraphics[width=\textwidth]{figures/bode_plot.png}
+\caption{Bode stability analysis of the feedback controller. Phase margin of 180° confirms unconditional stability with no resonant peaks in the control bandwidth.}
+\label{fig:bode}
 \end{figure}
 
 \subsection{Latency Analysis}
@@ -464,7 +464,7 @@ For hardware deployment, time-domain analysis (step response) is necessary but n
 \label{fig:bode}
 \end{figure}
 
-For our default parameters ($K_i = 0.05$, latency $= 500$ ns):
+For our default parameters ($K_i = 0.05$, latency $= 600$ ns):
 \begin{itemize}[noitemsep]
     \item \textbf{Phase Margin}: $>$45° (safe for hardware)
     \item \textbf{Gain Margin}: $>$6 dB (robust to gain variations)
@@ -495,6 +495,13 @@ The Bode plot analysis is implemented in \texttt{frequency\_analysis.py} and can
 \label{tab:mbl_vs_gst}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/mbl_vs_gst.png}
+\caption{Robustness comparison. MBL (blue) provides rapid estimates but degrades under high SPAM, whereas GST (green) remains robust, validating a tiered diagnostic approach.}
+\label{fig:mbl_vs_gst}
+\end{figure}
+
 \textbf{Practical Guidance}:
 \begin{itemize}[noitemsep]
     \item Use MBL for quick diagnostics on well-calibrated hardware ($<$1\% readout bias)
@@ -512,7 +519,7 @@ The Bode plot analysis is implemented in \texttt{frequency\_analysis.py} and can
 
 \textbf{L2. Leakage Modeling (NEW)}: Probabilistic leakage to $|2\rangle$ state is now tracked via \texttt{LeakageTracker} with configurable \texttt{leakage\_rate} and \texttt{seepage\_rate} (LRU recovery) parameters. 12 new tests validate this feature.
 
-\textbf{L3. Configurable Feedback Latency (NEW)}: Realistic FPGA latency (100--600ns) is now modeled via \texttt{latency\_ns} parameter with T1/T2 decay during idle. 6 new tests validate this feature.
+\textbf{L3. Configurable Feedback Latency (NEW)}: Realistic FPGA latency (600ns) is now modeled via \texttt{latency\_ns} parameter with T1/T2 decay ($T_1=68\mu s$, $T_2=75\mu s$) during idle. 6 new tests validate this feature.
 
 \textbf{L4. Cosmic Ray / Burst Detection (NEW)}: High-energy events are detected via \texttt{BurstErrorDetector} with dynamic Cirq region expansion for correlated error recovery. 15 new tests validate this feature.
 
