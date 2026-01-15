@@ -25,3 +25,8 @@ Thumbs.db
 results/
 checkpoints/
 *.pkl
+
+# pyGSTi
+*.json
+*.hson
+temp_gst_*
