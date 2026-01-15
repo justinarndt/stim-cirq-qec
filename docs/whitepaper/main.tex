@@ -459,12 +459,12 @@ The path to practical quantum advantage requires iteration speed. This simulatio
 \section{Test Trace Matrix}
 %==============================================================================
 
-The following trace matrix documents all validation tests, their locations in the codebase, pass status, and verification rationale. All 68 tests pass as of January 2026.
+The following trace matrix documents all validation tests, their locations in the codebase, pass status, and verification rationale. All 101 tests pass as of January 2026.
 
 \subsection{Bridge Tests (\texttt{tests/test\_bridge.py})}
 
 {\small
-\begin{longtable}{|p{5.5cm}|p{1.8cm}|c|p{7cm}|}
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
 \hline
 \textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
 \hline
@@ -515,7 +515,7 @@ The following trace matrix documents all validation tests, their locations in th
 
 \subsection{Feedback Controller Tests (\texttt{tests/test\_feedback\_loop.py})}
 
-\begin{longtable}{|p{4.5cm}|p{2cm}|c|p{5cm}|}
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
 \hline
 \textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
 \hline
@@ -558,7 +558,7 @@ The following trace matrix documents all validation tests, their locations in th
 
 \subsection{Full Pipeline Tests (\texttt{tests/test\_full\_pipeline.py})}
 
-\begin{longtable}{|p{4.5cm}|p{2cm}|c|p{5cm}|}
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
 \hline
 \textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
 \hline
@@ -613,7 +613,7 @@ The following trace matrix documents all validation tests, their locations in th
 
 \subsection{Remediation Tests (\texttt{tests/test\_remediation.py})}
 
-\begin{longtable}{|p{4.5cm}|p{2cm}|c|p{5cm}|}
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
 \hline
 \textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
 \hline
@@ -658,6 +658,107 @@ The following trace matrix documents all validation tests, their locations in th
 \hline
 \end{longtable}
 
+%------------------------------------------------------------------------------
+\subsection{Latency Decay Tests (\texttt{tests/test\_feedback\_loop.py})}
+
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
+\hline
+\textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
+\hline
+\endfirsthead
+\multicolumn{4}{l}{\textit{TestLatencyDecay (6 tests)}} \\
+\hline
+\texttt{test\_zero\_latency\_no\_penalty} & 205--210 & \textcolor{green!50!black}{\textbf{PASS}} & Zero latency $\Rightarrow$ zero decay \\
+\hline
+\texttt{test\_nonzero\_latency\_has\_penalty} & 212--223 & \textcolor{green!50!black}{\textbf{PASS}} & 500ns latency $\Rightarrow$ small positive decay \\
+\hline
+\texttt{test\_decay\_penalty\_scales\_with\_latency} & 225--238 & \textcolor{green!50!black}{\textbf{PASS}} & Higher latency $\Rightarrow$ higher penalty \\
+\hline
+\texttt{test\_decay\_penalty\_scales\_with\_t1} & 240--252 & \textcolor{green!50!black}{\textbf{PASS}} & Shorter T1 $\Rightarrow$ higher penalty \\
+\hline
+\texttt{test\_history\_records\_decay\_penalty} & 254--266 & \textcolor{green!50!black}{\textbf{PASS}} & History dict includes decay\_penalty \\
+\hline
+\end{longtable}
+
+%------------------------------------------------------------------------------
+\subsection{Leakage Tests (\texttt{tests/test\_leakage.py})}
+
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
+\hline
+\textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
+\hline
+\endfirsthead
+\multicolumn{4}{l}{\textit{TestLeakageTracker (10 tests)}} \\
+\hline
+\texttt{test\_initialization} & 22--28 & \textcolor{green!50!black}{\textbf{PASS}} & Correct initial state \\
+\hline
+\texttt{test\_no\_leakage\_at\_zero\_rate} & 30--38 & \textcolor{green!50!black}{\textbf{PASS}} & Zero rate $\Rightarrow$ no leakage \\
+\hline
+\texttt{test\_leakage\_accumulates} & 40--52 & \textcolor{green!50!black}{\textbf{PASS}} & Leakage grows over cycles \\
+\hline
+\texttt{test\_seepage\_recovers\_qubits} & 54--64 & \textcolor{green!50!black}{\textbf{PASS}} & 100\% seepage $\Rightarrow$ full recovery \\
+\hline
+\texttt{test\_equilibrium\_with\_seepage} & 66--78 & \textcolor{green!50!black}{\textbf{PASS}} & Reaches bounded equilibrium \\
+\hline
+\texttt{test\_error\_contribution\_zero\_when\_no\_leakage} & 80--84 & \textcolor{green!50!black}{\textbf{PASS}} & No leakage $\Rightarrow$ zero contribution \\
+\hline
+\texttt{test\_error\_contribution\_increases\_with\_leakage} & 86--98 & \textcolor{green!50!black}{\textbf{PASS}} & More leaked $\Rightarrow$ higher error \\
+\hline
+\texttt{test\_history\_recording} & 100--107 & \textcolor{green!50!black}{\textbf{PASS}} & History has 10 entries \\
+\hline
+\texttt{test\_reset\_clears\_state} & 109--120 & \textcolor{green!50!black}{\textbf{PASS}} & Reset $\Rightarrow$ clean state \\
+\hline
+\texttt{test\_statistics} & 122--132 & \textcolor{green!50!black}{\textbf{PASS}} & Stats dict has expected keys \\
+\hline
+\multicolumn{4}{l}{\textit{TestLeakageIntegration (2 tests)}} \\
+\hline
+\texttt{test\_leakage\_creates\_error\_floor} & 138--153 & \textcolor{green!50!black}{\textbf{PASS}} & d=15 has $0 <$ floor $< 0.5$ \\
+\hline
+\end{longtable}
+
+%------------------------------------------------------------------------------
+\subsection{Burst Detection Tests (\texttt{tests/test\_burst\_detection.py})}
+
+\begin{longtable}{|p{7cm}|p{2.2cm}|c|p{11.5cm}|}
+\hline
+\textbf{Test Name} & \textbf{Lines} & \textbf{Status} & \textbf{Verification Rationale} \\
+\hline
+\endfirsthead
+\multicolumn{4}{l}{\textit{TestBurstErrorDetector (6 tests)}} \\
+\hline
+\texttt{test\_initialization} & 22--28 & \textcolor{green!50!black}{\textbf{PASS}} & Correct initial state \\
+\hline
+\texttt{test\_no\_detection\_below\_threshold} & 30--39 & \textcolor{green!50!black}{\textbf{PASS}} & Normal syndromes $\Rightarrow$ no burst \\
+\hline
+\texttt{test\_detection\_on\_spike} & 41--53 & \textcolor{green!50!black}{\textbf{PASS}} & 40\% spike $\Rightarrow$ burst detected \\
+\hline
+\texttt{test\_cooldown\_prevents\_repeated\_detection} & 55--70 & \textcolor{green!50!black}{\textbf{PASS}} & Cooldown blocks re-detection \\
+\hline
+\texttt{test\_expanded\_cirq\_region} & 72--85 & \textcolor{green!50!black}{\textbf{PASS}} & Expansion includes neighbors \\
+\hline
+\texttt{test\_recovery\_recommendation} & 87--101 & \textcolor{green!50!black}{\textbf{PASS}} & Recommendation dict valid \\
+\hline
+\multicolumn{4}{l}{\textit{TestCosmicRaySimulator (5 tests)}} \\
+\hline
+\texttt{test\_initialization} & 106--112 & \textcolor{green!50!black}{\textbf{PASS}} & 49 qubits, empty history \\
+\hline
+\texttt{test\_generate\_impact} & 114--122 & \textcolor{green!50!black}{\textbf{PASS}} & Impact has correct fields \\
+\hline
+\texttt{test\_affected\_qubits\_within\_radius} & 124--132 & \textcolor{green!50!black}{\textbf{PASS}} & Center always affected \\
+\hline
+\texttt{test\_depolarization\_map} & 134--143 & \textcolor{green!50!black}{\textbf{PASS}} & Shape 25, center $> 0$ \\
+\hline
+\texttt{test\_impact\_rate} & 145--154 & \textcolor{green!50!black}{\textbf{PASS}} & $\sim$100 impacts in 10k cycles \\
+\hline
+\multicolumn{4}{l}{\textit{TestInjectCosmicRay (3 tests)}} \\
+\hline
+\texttt{test\_inject\_modifies\_syndromes} & 159--167 & \textcolor{green!50!black}{\textbf{PASS}} & Some bits flipped \\
+\hline
+\texttt{test\_inject\_affects\_nearby} & 169--180 & \textcolor{green!50!black}{\textbf{PASS}} & Center flipped \\
+\hline
+\end{longtable}
+
+
 \subsection{Summary}
 
 \begin{center}
@@ -666,11 +767,13 @@ The following trace matrix documents all validation tests, their locations in th
 \textbf{Test File} & \textbf{Classes} & \textbf{Tests} & \textbf{Passed} & \textbf{Coverage} \\
 \midrule
 \texttt{test\_bridge.py} & 4 & 17 & \textcolor{green!50!black}{17} & Bridge, NoiseModel, Coherent \\
-\texttt{test\_feedback\_loop.py} & 3 & 18 & \textcolor{green!50!black}{18} & Controller, Drift, Gains \\
+\texttt{test\_feedback\_loop.py} & 4 & 24 & \textcolor{green!50!black}{24} & Controller, Drift, Gains, Latency \\
 \texttt{test\_full\_pipeline.py} & 4 & 18 & \textcolor{green!50!black}{18} & Sampler, Runner, Integration \\
 \texttt{test\_remediation.py} & 3 & 16 & \textcolor{green!50!black}{16} & MBL, Pulse, Pipeline \\
+\texttt{test\_leakage.py} & 2 & 12 & \textcolor{green!50!black}{12} & LeakageTracker, Integration \\
+\texttt{test\_burst\_detection.py} & 3 & 14 & \textcolor{green!50!black}{14} & BurstDetector, CosmicRay, Inject \\
 \midrule
-\textbf{TOTAL} & \textbf{14} & \textbf{68} & \textcolor{green!50!black}{\textbf{68}} & \textbf{100\%} \\
+\textbf{TOTAL} & \textbf{20} & \textbf{101} & \textcolor{green!50!black}{\textbf{101}} & \textbf{100\%} \\
 \bottomrule
 \end{tabular}
 \end{center}
