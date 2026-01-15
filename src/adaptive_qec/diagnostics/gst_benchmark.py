@@ -100,13 +100,13 @@ class GSTBenchmark:
         list
             List of pyGSTi circuits for GST.
         """
-        from pygsti.circuits import make_lsgst_experiment_list
+        from pygsti.circuits.gstcircuits import create_lsgst_experiment_list
         
         fiducials = pygsti.circuits.to_circuits(['{}', 'Gxpi2', 'Gypi2', 'Gxpi2:Gxpi2'])
         germs = pygsti.circuits.to_circuits(['Gi', 'Gxpi2', 'Gypi2', 'Gxpi2:Gypi2'])
         max_lengths = [1, 2, 4, 8, 16, 32][:self.max_length.bit_length()]
         
-        circuits = make_lsgst_experiment_list(
+        circuits = create_lsgst_experiment_list(
             self.target_model,
             fiducials, fiducials,
             germs, max_lengths
