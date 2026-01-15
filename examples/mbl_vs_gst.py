@@ -55,20 +55,23 @@ def run_mbl_with_spam(
     tuple
         (recovered_couplings, error)
     """
+    # Generate disorder fields for MBL regime
+    h_fields = HamiltonianLearner.generate_aubry_andre_fields(learner.L)
+    
     # Generate clean imbalance trace with true couplings
     t = np.linspace(0, 10, 50)
-    imbalance_clean = learner.compute_imbalance_trace(true_couplings, t)
+    imbalance_clean = learner.simulate_dynamics(true_couplings, h_fields, t)
     
     # Apply SPAM noise
     imbalance_noisy = compute_imbalance_with_spam(imbalance_clean, spam_model)
     
     # Recover couplings from noisy trace
-    recovered = learner.recover_hamiltonian(imbalance_noisy, t)
+    recovered_J, final_loss = learner.learn_hamiltonian(imbalance_noisy, t, h_fields)
     
     # Compute error
-    error = np.mean(np.abs(true_couplings - recovered['J']))
+    error = np.mean(np.abs(true_couplings - recovered_J))
     
-    return recovered['J'], error
+    return recovered_J, error
 
 
 def run_gst_with_spam(
