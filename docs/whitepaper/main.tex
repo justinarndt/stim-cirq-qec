@@ -335,11 +335,38 @@ All benchmarks use:
 \section{Results}
 %==============================================================================
 
+\subsection{System Architecture}
+
+Figure~\ref{fig:architecture} illustrates the complete hybrid stack architecture, showing how Stim, Cirq, and the feedback controller interact.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/architecture_diagram.png}
+\caption{Stim-Cirq-QEC hybrid stack architecture. The system combines Stim's fast Pauli sampling (blue) with Cirq's coherent noise modeling (red), augmented with real-time feedback control (green), MBL diagnostics (purple), and pulse remediation (orange).}
+\label{fig:architecture}
+\end{figure}
+
 \subsection{Drift Suppression Under Non-Stationary Noise}
 
 Figure~\ref{fig:drift} shows the error rate comparison between static MWPM and adaptive feedback across distances $d=5$--$15$.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/drift_suppression_curves.png}
+\caption{Drift suppression performance across code distances. Static MWPM (red) shows increasing error under OU drift, while adaptive feedback (green) maintains low error rates. Error bars show 95\% CI over 20 independent seeds.}
+\label{fig:drift}
+\end{figure}
+
 The adaptive controller maintains $\lambda > 2$ exponential suppression even under continuous Ornstein-Uhlenbeck drift, achieving \textbf{4,747$\times$} suppression at $d=15$.
+
+Figure~\ref{fig:exponential} demonstrates the exponential suppression on a log-scale plot.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/exponential_suppression.png}
+\caption{Logical error rate vs.\ code distance on log scale. Three scenarios: no drift (blue), drift with static MWPM (red), and drift with adaptive feedback (green). Only the adaptive system maintains $\lambda > 2$ exponential suppression at all distances.}
+\label{fig:exponential}
+\end{figure}
 
 The $\lambda$ factor quantifies exponential suppression and is computed via least-squares regression on the log-log plot of error rate vs.\ distance:
 \begin{equation}
@@ -357,9 +384,32 @@ The MBL diagnostics achieve \textbf{$<$2e-2 coupling recovery error} on average,
     \item Localization of crosstalk hotspots
 \end{itemize}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/hamiltonian_recovery.png}
+\caption{Hamiltonian recovery accuracy. Left: recovered vs.\ true coupling values (ideal = diagonal). Right: error distribution showing $<$2e-2 mean recovery error across all coupling parameters.}
+\label{fig:hamiltonian}
+\end{figure}
+
 Subsequent pulse remediation achieves \textbf{99.5\%+ fidelity recovery} on defective qubits.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fidelity_contour.png}
+\caption{Fidelity recovery contour map showing gate fidelity as a function of defect strength and crosstalk level. The optimal control pulse synthesis achieves $>$99\% fidelity (green region) across a wide parameter range.}
+\label{fig:fidelity}
+\end{figure}
+
 \subsection{Ablation Study}
+
+Figure~\ref{fig:ablation} shows the contribution of each component to error suppression.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/ablation_chart.png}
+\caption{Component ablation study at $d=7$. Each bar shows the logical error rate with different components enabled. The full adaptive stack achieves 40$\times$ suppression over static MWPM.}
+\label{fig:ablation}
+\end{figure}
 
 Component contributions to error suppression at $d=7$:
 \begin{itemize}[noitemsep]
@@ -369,6 +419,39 @@ Component contributions to error suppression at $d=7$:
     \item + Feedback ($K_i=0.05$): \textbf{40$\times$}
     \item + Full stack ($K_i=0.10$): 35$\times$ (over-aggressive)
 \end{itemize}
+
+\subsection{Performance and Scaling}
+
+Figure~\ref{fig:performance} demonstrates the computational performance of the hybrid stack.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/performance_scaling.png}
+\caption{Computational performance scaling. Runtime vs.\ distance shows near-linear scaling up to $d=15$, enabling 1000$\times$ faster iteration than hardware testing.}
+\label{fig:performance}
+\end{figure}
+
+\subsection{Feedback Controller Dynamics}
+
+Figure~\ref{fig:feedback} shows the real-time feedback controller behavior during a simulated drift event.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/feedback_dynamics.png}
+\caption{Feedback controller dynamics during drift suppression. Top: syndrome density over time with step drift injection. Bottom: controller correction signal showing integral accumulation and settling behavior.}
+\label{fig:feedback}
+\end{figure}
+
+\subsection{Latency Analysis}
+
+Figure~\ref{fig:latency} breaks down the computational latency of each component.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/latency_breakdown.png}
+\caption{Component latency breakdown. Stim sampling dominates at low distances; Cirq coherent simulation becomes significant at higher distances. Total latency remains under 1ms per cycle for $d\leq 15$.}
+\label{fig:latency}
+\end{figure}
 
 %==============================================================================
 \section{Limitations and Future Work}

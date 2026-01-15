@@ -111,6 +111,7 @@ python examples/cosmic_ray_demo.py
 
 ## Project Structure
 
+```
 ├── src/adaptive_qec/
 │   ├── hybrid/                     # Core integration layer
 │   │   ├── stim_cirq_bridge.py     # Stim↔Cirq conversion, DEM, coherent noise
