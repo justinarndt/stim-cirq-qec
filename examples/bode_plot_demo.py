@@ -123,7 +123,7 @@ def main():
     print("CONCLUSION")
     print("=" * 70)
     print(f"""
-With Ki = {Ki} and latency = {latency_ns} ns:
+With Ki = {0.05} and latency = {latency_ns} ns:
 - Phase margin = {margins.phase_margin_deg:.1f}° > 45° ✓
 - Gain margin = {margins.gain_margin_db:.1f} dB > 6 dB ✓
 
