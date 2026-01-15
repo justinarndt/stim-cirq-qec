@@ -288,16 +288,24 @@ Our results extend Google's exponential suppression achievement in two critical 
 
 \subsection{Limitations}
 \begin{itemize}
-    \item Coherent hotspot size limited by Cirq density matrix scaling
-    \item No leakage or SPAM error modeling
-    \item Feedback latency assumes classical co-processor
+    \item Coherent hotspot size limited by Cirq density matrix scaling ($n \leq 15$ qubits)
+    \item SPAM error modeling not yet implemented
+    \item Hardware ground truth only available up to $d=7$ (higher distances are predictions)
+\end{itemize}
+
+\textbf{Recently Addressed (v2.1):}
+\begin{itemize}
+    \item Leakage modeling now implemented via \texttt{LeakageTracker} (see Section 2.2.5)
+    \item Feedback latency with T1/T2 decay now configurable via \texttt{latency\_ns} parameter
+    \item Cosmic ray / burst error detection via \texttt{BurstErrorDetector}
 \end{itemize}
 
 \subsection{Future Work}
 \begin{itemize}
     \item AlphaQubit neural decoder integration
     \item Hardware-in-the-loop validation
-    \item Real-time FPGA implementation
+    \item Full qutrit simulation for enhanced leakage modeling
+    \item SPAM error modeling
 \end{itemize}
 
 %==============================================================================
