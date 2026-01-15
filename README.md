@@ -208,25 +208,29 @@ python examples/full_pipeline_benchmark.py
 
 ```
 ============================= test session starts =============================
-collected 68 items
+collected 101 items
 
-tests/test_bridge.py ..................                                  [ 26%]
-tests/test_feedback_loop.py .................                            [ 51%]
-tests/test_full_pipeline.py ..................                           [ 77%]
-tests/test_remediation.py ................                               [100%]
+tests/test_bridge.py ..................                                  [ 17%]
+tests/test_feedback_loop.py ........................                     [ 41%]
+tests/test_full_pipeline.py ..................                           [ 59%]
+tests/test_remediation.py ................                               [ 75%]
+tests/test_leakage.py ............                                       [ 87%]
+tests/test_burst_detection.py ..............                             [100%]
 
-============================== 68 passed in 195s ==============================
+============================== 101 passed in 210s ==============================
 ```
 
-### Test Coverage: 68 Tests (100% Pass)
+### Test Coverage: 101 Tests (100% Pass)
 
 | Module | Tests | Status |
 |--------|-------|--------|
-| `test_bridge.py` | 18 | ✅ 18/18 PASS |
-| `test_feedback_loop.py` | 17 | ✅ 17/17 PASS |
+| `test_bridge.py` | 17 | ✅ 17/17 PASS |
+| `test_feedback_loop.py` | 24 | ✅ 24/24 PASS |
 | `test_full_pipeline.py` | 18 | ✅ 18/18 PASS |
-| `test_remediation.py` | 15 | ✅ 15/15 PASS |
-| **Total** | **68** | **68/68 (100%)** |
+| `test_remediation.py` | 16 | ✅ 16/16 PASS |
+| `test_leakage.py` | 12 | ✅ 12/12 PASS |
+| `test_burst_detection.py` | 14 | ✅ 14/14 PASS |
+| **Total** | **101** | **101/101 (100%)** |
 
 ### Coherent Remediation Verified Results
 
