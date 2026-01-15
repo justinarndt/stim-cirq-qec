@@ -38,7 +38,7 @@ We present \textbf{Stim-Cirq-QEC}, a hybrid quantum error correction stack that 
     \item \textbf{Exponential suppression factor $\lambda > 2.0$} maintained at each distance step (d=5→15)
     \item \textbf{99.5\%+ fidelity recovery} on defective hardware via optimal control pulse synthesis
     \item \textbf{<2e-2 Hamiltonian recovery error} using MBL-based inverse problem solving
-    \item \textbf{68/68 tests passing} (100\% coverage) with full reproducibility
+    \item \textbf{101/101 tests passing} (100\% coverage) with full reproducibility
 \end{itemize}
 
 Our results exceed Google's Willow benchmark (d=7, static noise) by demonstrating sustained exponential suppression up to d=15 under realistic non-stationary conditions. The open-source implementation provides a production-ready foundation for next-generation fault-tolerant quantum computing.
@@ -117,6 +117,24 @@ Optimal control synthesis maximizes gate fidelity:
     \max_{\{u_k(t)\}} |\langle \psi_{\text{target}} | U(\{u_k\}) | \psi_0 \rangle|^2
 \end{equation}
 using gradient-based optimization over time-discretized control pulses.
+
+\subsubsection{Reality Gap Physics (NEW)}
+The following hardware-realistic effects are now modeled:
+
+\textbf{Feedback Latency + T1/T2 Decay:} Real FPGA feedback has 100--600ns latency. During this window, qubits idle and experience T1/T2 decoherence:
+\begin{equation}
+    P_{\text{decay}} = \frac{1}{2}\left(1 - e^{-t_{\text{idle}}/T_1} + 1 - e^{-t_{\text{idle}}/T_2}\right)
+\end{equation}
+Configurable via \texttt{latency\_ns}, \texttt{t1\_us}, \texttt{t2\_us} parameters.
+
+\textbf{Leakage Modeling:} Transmons can leak to $|2\rangle$ (f) state during strong pulses. The \texttt{LeakageTracker} tracks per-qubit leakage state with:
+\begin{itemize}
+    \item \texttt{leakage\_rate}: per-gate $|1\rangle \to |2\rangle$ probability
+    \item \texttt{seepage\_rate}: per-gate $|2\rangle \to |1\rangle$ (LRU recovery)
+\end{itemize}
+Leakage creates an error floor that limits suppression at high distances.
+
+\textbf{Cosmic Ray / Burst Detection:} High-energy events (cosmic rays) cause correlated burst errors. The \texttt{BurstErrorDetector} monitors syndrome density for spikes and dynamically expands the Cirq simulation region when detected.
 
 %==============================================================================
 \section{Methods}

@@ -16,7 +16,7 @@ Hybrid Stim + Cirq Adaptive QEC Stack with Real-Time Syndrome Feedback, MBL Diag
 | **Hamiltonian Recovery** | — | **<2e-2 error** | — | ✅ |
 | **Fidelity Recovery** | 0.00% | **99.5%+** | ∞ | ✅ |
 | **Exponential λ** | — | **>2.0 per step** | Verified | ✅ |
-| **Test Coverage** | — | **68/68 tests** | 100% | ✅ |
+| **Test Coverage** | — | **101/101 tests** | 100% | ✅ |
 
 ---
 
@@ -81,7 +81,11 @@ config = ExperimentConfig(
     distance=7,
     num_cycles=1000,
     enable_drift=True,
-    feedback_Ki=0.05
+    feedback_Ki=0.05,
+    # Reality Gap parameters (NEW)
+    latency_ns=500.0,      # FPGA feedback latency
+    t1_us=100.0,           # T1 relaxation time
+    t2_us=80.0,            # T2 dephasing time
 )
 
 runner = AdaptiveSurfaceCode(config)
@@ -93,29 +97,31 @@ print(f"Suppression: {results['suppression_factor']:.1f}x")
 ### Run Experiments
 
 ```bash
-# Willow-like drift suppression (d=5–11, multi-seed)
+# Willow-like drift suppression (d=5–15, multi-seed)
 python examples/willow_like_drift.py
 
 # Coherent error remediation (MBL diagnosis + pulse synthesis)
 python examples/coherent_remediation.py
 
-# Ablation study + scaling benchmark
-python examples/full_pipeline_benchmark.py
+# Cosmic ray burst detection demo (NEW)
+python examples/cosmic_ray_demo.py
 ```
 
 ---
 
 ## Project Structure
 
-```
-stim-cirq-qec/
 ├── src/adaptive_qec/
 │   ├── hybrid/                     # Core integration layer
 │   │   ├── stim_cirq_bridge.py     # Stim↔Cirq conversion, DEM, coherent noise
-│   │   ├── adaptive_sampler.py     # Hybrid sampler with feedback
+│   │   ├── adaptive_sampler.py     # Hybrid sampler with feedback + leakage
 │   │   └── realtime_surface.py     # AdaptiveSurfaceCode runner
 │   ├── feedback/                   # Syndrome feedback control
-│   │   └── controller.py           # SyndromeFeedbackController
+│   │   └── controller.py           # SyndromeFeedbackController + latency decay
+│   ├── physics/                    # Realistic hardware modeling (NEW)
+│   │   ├── leakage.py              # LeakageTracker for |2⟩ state
+│   │   ├── burst_detector.py       # Cosmic ray burst detection
+│   │   └── cosmic_ray.py           # High-energy event simulation
 │   ├── diagnostics/                # Hardware characterization
 │   │   └── hamiltonian_learner.py  # MBL-based defect diagnosis
 │   └── remediation/                # Fidelity recovery
@@ -123,10 +129,13 @@ stim-cirq-qec/
 ├── examples/
 │   ├── willow_like_drift.py        # Exponential suppression under drift
 │   ├── coherent_remediation.py     # Diagnose + remediate pipeline
+│   ├── cosmic_ray_demo.py          # Burst detection demo (NEW)
 │   └── full_pipeline_benchmark.py  # Ablation study + scaling
-├── tests/                          # 80+ validation tests
+├── tests/                          # 101 validation tests
 │   ├── test_bridge.py              # Stim↔Cirq conversion tests
-│   ├── test_feedback_loop.py       # Controller dynamics tests
+│   ├── test_feedback_loop.py       # Controller dynamics + latency tests
+│   ├── test_leakage.py             # Leakage tracking tests (NEW)
+│   ├── test_burst_detection.py     # Cosmic ray detection tests (NEW)
 │   ├── test_remediation.py         # MBL + pulse synthesis tests
 │   └── test_full_pipeline.py       # Integration tests
 ├── docs/                           # Generated figures

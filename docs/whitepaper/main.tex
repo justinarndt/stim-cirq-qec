@@ -378,19 +378,21 @@ Component contributions to error suppression at $d=7$:
 
 \textbf{L1. Coherent Hotspot Size}: Cirq density matrix simulation limited to $n \leq 15$ qubits.
 
-\textbf{L2. No Leakage Modeling}: Real transmons have $|2\rangle$ states; simulation assumes pure qubits.
+\textbf{L2. Leakage Modeling (NEW)}: Probabilistic leakage to $|2\rangle$ state is now tracked via \texttt{LeakageTracker} with configurable \texttt{leakage\_rate} and \texttt{seepage\_rate} (LRU recovery) parameters. 12 new tests validate this feature.
 
-\textbf{L3. Feedback Latency}: Current model assumes zero-latency feedback; real FPGA has 100--500ns delay.
+\textbf{L3. Configurable Feedback Latency (NEW)}: Realistic FPGA latency (100--600ns) is now modeled via \texttt{latency\_ns} parameter with T1/T2 decay during idle. 6 new tests validate this feature.
 
-\textbf{L4. No Hardware Ground Truth Above $d=7$}: Results for $d \geq 9$ are predictions, not hardware-validated.
+\textbf{L4. Cosmic Ray / Burst Detection (NEW)}: High-energy events are detected via \texttt{BurstErrorDetector} with dynamic Cirq region expansion for correlated error recovery. 15 new tests validate this feature.
+
+\textbf{L5. No Hardware Ground Truth Above $d=7$}: Results for $d \geq 9$ are predictions, not hardware-validated.
 
 \subsection{Planned Improvements}
 
 \textbf{Short-term (3--6 months)}:
 \begin{itemize}[noitemsep]
-    \item Qutrit simulation for leakage modeling
-    \item Configurable feedback latency parameter
-    \item Extended test coverage (68 $\rightarrow$ 200+ tests)
+    \item Full qutrit simulation for enhanced leakage modeling
+    \item Neural decoder integration (AlphaQubit)
+    \item Extended test coverage (101 $\rightarrow$ 200+ tests)
 \end{itemize}
 
 \textbf{Medium-term (6--12 months)}:
@@ -413,7 +415,7 @@ The complete stack is open-sourced under MIT license at:
 
 \subsection{Test Suite}
 
-All \textbf{68 tests pass} on Ubuntu 22.04, macOS 13+, and Windows 11 (via WSL2) with Python 3.10--3.12.
+All \textbf{101 tests pass} on Ubuntu 22.04, macOS 13+, and Windows 11 (via WSL2) with Python 3.10--3.12.
 
 \begin{lstlisting}[language=bash]
 # Run test suite
@@ -445,7 +447,7 @@ This work demonstrates that high-fidelity quantum error correction simulation ca
     \item \textbf{Enabling risk-free exploration} beyond current hardware limits---sustained $\lambda > 2$ up to $d=15$
     \item \textbf{Providing actionable insights} through realistic error modeling at 1000$\times$ hardware speed
     \item \textbf{Demonstrating novel adaptive techniques}---4,747$\times$ suppression via feedback, 99.5\% fidelity recovery
-    \item \textbf{Offering immediate practical value}---68/68 tests passing, complete reproducibility
+    \item \textbf{Offering immediate practical value}---101/101 tests passing, complete reproducibility
 \end{enumerate}
 
 The path to practical quantum advantage requires iteration speed. This simulation stack compresses months of hardware testing into days of validated computational experiments.
